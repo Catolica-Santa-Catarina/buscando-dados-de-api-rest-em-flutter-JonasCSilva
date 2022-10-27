@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:tempo_template/screens/location_screen.dart';
+import 'package:tempo_template/services/location.dart';
+import 'package:tempo_template/services/networking.dart';
+import 'package:tempo_template/services/weather.dart';
 
 class LoadingScreen extends StatefulWidget {
   const LoadingScreen({Key? key}) : super(key: key);
@@ -9,43 +13,33 @@ class LoadingScreen extends StatefulWidget {
 }
 
 class _LoadingScreenState extends State<LoadingScreen> {
-  Future<void> checkLocationPermission() async {
-    bool serviceEnabled;
-    LocationPermission permission;
+  late double latitude;
+  late double longitude;
 
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      return Future.error('O serviço de localização está desabilitado.');
-    }
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        return Future.error('Sem permissão para acesso à localização');
-      }
-    }
-    if (permission == LocationPermission.deniedForever) {
-      return Future.error(
-          'A permissão para acesso a localização foi negada para sempre. Não é possível pedir permissão.');
-    }
+  void pushToLocationScreen(dynamic weatherData) {
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return LocationScreen(localWeatherData: weatherData);
+    }));
   }
 
-  Future<void> getLocation() async {
-    await checkLocationPermission();
-
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.best);
-    print(position);
+  void getData() async {
+    var weatherData = await WeatherModel().getLocationWeather();
+    pushToLocationScreen(weatherData);
   }
 
   @override
   void initState() {
     super.initState();
-    getLocation();
+    getData();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold();
+    return const Center(
+      child: SpinKitDoubleBounce(
+        color: Colors.white,
+        size: 100.0,
+      ),
+    );
   }
 }
