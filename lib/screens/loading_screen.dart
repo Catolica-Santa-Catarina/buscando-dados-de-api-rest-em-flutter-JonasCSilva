@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:tempo_template/screens/location_screen.dart';
-import 'package:tempo_template/services/location.dart';
-import 'package:tempo_template/services/networking.dart';
 import 'package:tempo_template/services/weather.dart';
 
 class LoadingScreen extends StatefulWidget {
